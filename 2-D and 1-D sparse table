@@ -1,5 +1,5 @@
 // 2-D sparse table
-lo kx,ky,ir,a1,a2,ans,ic,n,m,jr,jc,table[400][9][400][9],matrix[400][400];
+lo ir,ans,ic,n,m,jr,jc,table[400][9][400][9],matrix[400][400];
 
 for(ir=0;ir<n;ir++){
     for(ic=0;ic<m;ic++)
@@ -16,6 +16,7 @@ for(jr=1;jr<=log2(n);jr++)
                 table[ir][jr][ic][jc] = min(table[ir][jr-1][ic][jc],table[ir][ir+(1<<(jr-1))][ic][jc]);
 
 // for range in (x1,y1) -> (x2,y2)
+lo kx,ky,a1,a2,ans;
 kx = log2(x2-x1+1);
 ky = log2(y2-y1+1);
 
