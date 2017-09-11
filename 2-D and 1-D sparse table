@@ -1,0 +1,38 @@
+// 2-D sparse table
+lo kx,ky,ir,a1,a2,ans,ic,n,m,jr,jc,table[400][9][400][9],matrix[400][400];
+
+for(ir=0;ir<n;ir++){
+    for(ic=0;ic<m;ic++)
+        table[ir][0][ic][0]=matrix[ir][ic];
+    for(jc=1;jc<=log2(m);jc++)
+        for(ic=0;ic+(1<<(jc-1))<m;ic++)
+            table[ir][0][ic][jc]=max(table[ir][0][ic][jc-1], table[ir][0][ic+(1<<(jc-1))][jc-1]);
+}
+
+for(jr=1;jr<=log2(n);jr++)
+    for(ir=1;ir<n;ir++)
+        for(jc=1;jc<log2(m);jc++)
+            for(ic=1;ic<m;ic++)
+                table[ir][jr][ic][jc] = min(table[ir][jr-1][ic][jc],table[ir][ir+(1<<(jr-1))][ic][jc]);
+
+// for range in (x1,y1) -> (x2,y2)
+kx = log2(x2-x1+1);
+ky = log2(y2-y1+1);
+
+a1 = min(table[x1][kx][y1][ky], table[x1][kx][y2-(1<<ky)+1][ky]);
+a2 = min(table[x2-(1<<kx)+1][kx][y1][ky], table[x2-(1<<kx)+1][kx][y2-(1<<ky)+1][ky]);
+
+ans = min(a1,a2);
+
+//1-D sparse table
+
+lo arr[100000], table[100000][log2(100000)],n,ans,k;
+
+for(i=0;i<n;i++)table[i][0]=i;
+for(j=1;j<=log2(n);j++)
+    for(i=1;i+(1<<(j-1))<n;i++)
+        table[i][j]=min(table[i][j-1],table[i+(1<<(j-1))][j-1]);
+
+// for range l,r
+k = log2(r-l+1);
+ans = min(table[l][k], table[r-(1<<k)+1][k]);
