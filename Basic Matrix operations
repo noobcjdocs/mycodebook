@@ -1,0 +1,88 @@
+//MATRIX
+struct Matrix{
+  lo a[80][80],n,m;
+
+  friend Matrix operator + (const Matrix &lhs, const Matrix &rhs){
+    Matrix res;
+    res.n = lhs.n;
+    res.m = lhs.m;
+    REP(0,lhs.n)REPV(j,0,lhs.m)res.a[i][j] = (lhs.a[i][j] + rhs.a[i][j]) % mod;
+    return res;
+  }
+
+  friend Matrix operator * (const Matrix &lhs, const Matrix &rhs){
+    Matrix res;
+    res.n = lhs.n;
+    res.m = lhs.m;
+    REP(0,lhs.n)REPV(j,0,rhs.m){
+        res.a[i][j] = 0;
+        REPV(k,0,lhs.m)res.a[i][j] += lhs.a[i][k] * rhs.a[k][j];
+        res.a[i][j] %= mod;
+      }
+    return res;
+  }
+};
+
+Matrix transpose(Matrix mat){
+    Matrix res;
+    res.n = mat.n;
+    res.m = mat.m;
+    REP(0,res.n)REPV(j,0,res.m)res.a[i][j]=mat.a[j][i];
+}
+
+vector<double> gaussian(Matrix mat){
+    lo n = mat.n;
+    for (lo i=0; i<n; i++) {
+        // Search for maximum in this column
+        double maxEl = abs(mat.a[i][i]);
+        lo maxRow = i;
+        for (lo k=i+1; k<n; k++) {
+            if (abs(mat.a[k][i]) > maxEl) {
+                maxEl = abs(mat.a[k][i]);
+                maxRow = k;
+            }
+        }
+
+        // Swap maximum row with current row (column by column)
+        for (lo k=i; k<n+1;k++) {
+            double tmp = mat.a[maxRow][k];
+            mat.a[maxRow][k] = mat.a[i][k];
+            mat.a[i][k] = tmp;
+        }
+
+        // Make all rows below this one 0 in current column
+        for (lo k=i+1; k<n; k++) {
+            double c = -mat.a[k][i]/mat.a[i][i];
+            for (lo j=i; j<n+1; j++) {
+                if (i==j) {
+                    mat.a[k][j] = 0;
+                } else {
+                    mat.a[k][j] += c * mat.a[i][j];
+                }
+            }
+        }
+    }
+    vector<double> x(n);
+    for (lo i=n-1; i>=0; i--) {
+        x[i] = mat.a[i][n]/mat.a[i][i];
+        for (lo k=i-1;k>=0; k--) {
+            mat.a[k][n] -= mat.a[k][i] * x[i];
+        }
+    }
+    return x;
+}
+
+Matrix fast_pow(Matrix a, lo m){
+  Matrix res;
+  res.n = a.n;
+  res.m = a.m;
+  memset(res.a, 0, sizeof res.a);
+  for(lo i = 0; i < res.n; ++i)
+    res.a[i][i] = 1;
+  while(m){
+    if(m & 1)  res = res * a;
+    m >>= 1;
+    a = a * a;
+  }
+  return res;
+}
